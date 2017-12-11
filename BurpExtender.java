@@ -17,7 +17,7 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory
     private IExtensionHelpers helpers;
     private static SecretKeySpec secretKey;
     private static byte[] key;
-    private final String secretKey = "thefuckingkey";
+    private final String secretKeyInput = "thefuckingkey";
 
     //
     // implement IBurpExtender
@@ -160,8 +160,8 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory
                 IRequestInfo info = helpers.analyzeRequest(content);
                 List<String> headers = info.getHeaders();
                 byte[] body = Arrays.copyOfRange(content, info.getBodyOffset(), content.length);
-                String encryptedString = new String(body);
-                String decryptedString = decrypt(encryptedString, secretKey);
+                String encryptedString = new String(body).trim();
+                String decryptedString = decrypt(encryptedString, secretKeyInput);
                 txtInput.setText(helpers.buildHttpMessage(headers, decryptedString.getBytes()));
                 txtInput.setEditable(editable);
             }
@@ -182,7 +182,7 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory
                 List<String> headers = info.getHeaders();
                 byte[] body = Arrays.copyOfRange(text, info.getBodyOffset(), text.length);
                 String decryptedString = new String(body);
-                String encryptedString = encrypt(decryptedString, secretKey);
+                String encryptedString = encrypt(decryptedString, secretKeyInput);
                 byte[] input = encryptedString.getBytes();
                 return helpers.buildHttpMessage(headers, input);
             }
